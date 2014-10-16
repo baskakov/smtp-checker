@@ -161,6 +161,7 @@ public class SMTPMXLookup {
             }
             catch (Exception ex) {
                 // Do nothing but try next host
+                result.add(ex.getMessage());
                 ex.printStackTrace();
             }
             finally {

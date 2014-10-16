@@ -199,7 +199,7 @@ public class SMTPSession
 
         // A "." on a line by itself ends a message.
         doCommand(".", '2');
-        
+
         // Message is sent. Close the connection to the server
         close();
 
