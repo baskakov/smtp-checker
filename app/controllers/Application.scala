@@ -27,7 +27,13 @@ object Application extends Controller {
     val data = checkForm.bindFromRequest.value.map({
       case CheckData(host,port,email) =>
         val session = new SMTPSession(host, port, email, "test@mail.ru", "Subject", "Body")
-        session.sendMessage()
+        val res = try {
+          session.sendMessage()
+        }
+        catch {
+          case e => session.log + "\r\n --------------------------------------- \r\n        " + e.getMessage
+        }
+        res
     })
 
     Ok(views.html.index(checkForm.bindFromRequest, data))
