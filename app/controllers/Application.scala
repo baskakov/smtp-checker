@@ -5,6 +5,10 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import com.arcww.smtp.{MailHostsLookup, SMTPMXLookup, SMTPSession}
+import ws.bask.smtp.{SmtpCheckResult, EmailChecker}
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class CheckData(host: String, port: Int, email: String)
 
@@ -23,28 +27,15 @@ object Application extends Controller {
     )(CheckData.apply)(CheckData.unapply)
   )
 
-  def submit = Action { implicit request =>
+  def submit = Action.async { implicit request =>
     val data = checkForm.bindFromRequest.value.map({
       case CheckData(host,port,email) =>
-        val session = new SMTPSession(host, port, email, "test@mail.ru", "Subject", "Body")
-        val res = try {
-          session.sendMessage() :: "----------------------------" :: Nil
-        }
-        catch {
-          case e => session.log :: e.getMessage :: "----------------------------" :: Nil
-        }
-
-        val mailHosts = try {
-          MailHostsLookup.lookupMailHosts(email.split("@")(1)).toList
-        } catch {
-          case e => e.getMessage :: Nil
-        }
-
-        import scala.collection.JavaConversions._
-        mailHosts ++ List("-----------------x----------------") ++res ++ SMTPMXLookup.isAddressValid(email).toIndexedSeq.toList
+        EmailChecker.check(email)
     })
 
-    Ok(views.html.index(checkForm.bindFromRequest, data))
+    val ft = data.getOrElse(Future.successful(Nil))
+
+    ft.map(ls => Ok(views.html.index(checkForm.bindFromRequest, Some(ls))))
   }
 
 }

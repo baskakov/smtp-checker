@@ -1,8 +1,8 @@
 package ws.bask.smtp
 
 import javax.naming.directory.InitialDirContext
+import play.api.Logger
 import ws.bask.util.Int
-import scala.Int
 import scala.util.Try
 
 case class MxRecord(priority: Int, host: String)
@@ -12,6 +12,12 @@ object MxRecordsFinder {
 
   def lookup(domain: String) = {
     val dirContext = new InitialDirContext()
+    Logger.info(domain)
+    Logger.info(domain)
+    Logger.info(domain)
+    Logger.info(domain)
+    Logger.info(domain)
+
     val attributes = dirContext.getAttributes("dns:/" + domain, Array[String]("MX"))
     Option(attributes.get("MX")) match {
       case None => List(MxRecord(0,domain))
@@ -19,7 +25,7 @@ object MxRecordsFinder {
         (0 until attr.size).flatMap(i => "" + attr.get(i) match {
           case MxExtractor(Int(p), h) => Some(MxRecord(p,h))
           case _ => None
-        }).sortBy(_.priority)
+        }).sortBy(_.priority).toList
     }
   }
 

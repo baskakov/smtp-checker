@@ -1,4 +1,4 @@
-@(form:Form[controllers.CheckData], result: Option[List[String]] = None)
+@(form:Form[controllers.CheckData], result: Option[List[ws.bask.smtp.SmtpCheckResult]] = None)
 
 @main{
 
@@ -22,11 +22,21 @@
         <h3 class="panel-title">Результаты валидации</h3>
     </div>
     <div class="panel-body">
-            <ul>
+            <table>
                 @for(l <- result.get) {
-                <li>@l</li>
+                <tr>
+                   <td>@l.mxRecord</td>
+                   <td>@l.code</td>
+                   <td>
+                       <ul>
+                           @for(r <- l.proof) {
+                           <li>@r</li>
+                           }
+                       </ul>
+                   </td>
+                </tr>
                 }
-            </ul>
+            </table>
     </div>
 </div>
 }
