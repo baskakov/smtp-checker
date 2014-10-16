@@ -26,15 +26,16 @@ object Application extends Controller {
   def submit = Action { implicit request =>
     val data = checkForm.bindFromRequest.value.map({
       case CheckData(host,port,email) =>
-        /*val session = new SMTPSession(host, port, email, "test@mail.ru", "Subject", "Body")
+        val session = new SMTPSession(host, port, email, "test@mail.ru", "Subject", "Body")
         val res = try {
           session.sendMessage()
         }
         catch {
           case e => session.log + "\r\n --------------------------------------- \r\n        " + e.getMessage
-        }*/
+        }
+        val a = session.sendMessage()
         import scala.collection.JavaConversions._
-        SMTPMXLookup.isAddressValid(email).toIndexedSeq.toList
+        a +: SMTPMXLookup.isAddressValid(email).toIndexedSeq.toList
     })
 
     Ok(views.html.index(checkForm.bindFromRequest, data))

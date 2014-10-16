@@ -88,6 +88,7 @@ public class SMTPMXLookup {
 
         // Isolate the domain/machine name and get a list of mail exchangers
         String domain = address.substring( ++pos );
+        result.add("Checking domain " + domain);
         ArrayList mxList = null;
         try {
             mxList = getMX( domain );

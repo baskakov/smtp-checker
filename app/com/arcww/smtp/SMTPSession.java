@@ -182,7 +182,7 @@ public class SMTPSession
 
         // Okay, now send the mail message. We expect a response beginning
         // with '3' indicating that the server is ready for data.
-        /*doCommand("DATA", '3');
+        doCommand("DATA", '3');
 
         // Send the message headers
         out.write(getMessageHeaders());
@@ -199,7 +199,7 @@ public class SMTPSession
 
         // A "." on a line by itself ends a message.
         doCommand(".", '2');
-        */
+        
         // Message is sent. Close the connection to the server
         close();
 
