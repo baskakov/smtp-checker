@@ -1,0 +1,30 @@
+@(form:Form[controllers.CheckData], result: Option[String] = None)
+
+@main{
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Заполните параметры запроса</h3>
+    </div>
+    <div class="panel-body">
+
+@helper.form(action = routes.Application.submit) {
+@helper.inputText(form("host"))
+@helper.inputText(form("port"))
+@helper.inputText(form("email"))
+<input type="submit"/>
+}
+    </div>
+</div>
+@if(result.isDefined) {
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <h3 class="panel-title">Результаты валидации</h3>
+    </div>
+    <div class="panel-body">
+        @result.get
+    </div>
+</div>
+}
+
+}
