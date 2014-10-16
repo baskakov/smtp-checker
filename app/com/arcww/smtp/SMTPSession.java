@@ -176,12 +176,13 @@ public class SMTPSession
 
         // Tell the server who this message is from
         doCommand("MAIL FROM: <" + sender + ">", '2');
-
+        System.out.print(log);
         // Now tell the server who we want to send a message to
         doCommand("RCPT TO: <" + recipient + ">", '2');
-
+        System.out.print(log);
         sendCommand("RSET");
         sendCommand("QUIT");
+
 
         // Message is sent. Close the connection to the server
         close();
