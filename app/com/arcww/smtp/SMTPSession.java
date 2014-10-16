@@ -180,25 +180,8 @@ public class SMTPSession
         // Now tell the server who we want to send a message to
         doCommand("RCPT TO: <" + recipient + ">", '2');
 
-        // Okay, now send the mail message. We expect a response beginning
-        // with '3' indicating that the server is ready for data.
-        doCommand("DATA", '3');
-
-        // Send the message headers
-        out.write(getMessageHeaders());
-
-        BufferedReader msgBodyReader = new BufferedReader(new StringReader(message));
-        // Send each line of the message
-        String line;
-        while ((line=msgBodyReader.readLine()) != null) {
-            // If the line begins with a ".", put an extra "." in front of it.
-            if (line.startsWith("."))
-                out.write('.');
-            out.write(line + "\n");
-        }
-
-        // A "." on a line by itself ends a message.
-        doCommand(".", '2');
+        sendCommand("RSET");
+        sendCommand("QUIT");
 
         // Message is sent. Close the connection to the server
         close();
