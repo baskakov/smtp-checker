@@ -1,4 +1,4 @@
-@(form:Form[controllers.CheckData], result: Option[String] = None)
+@(form:Form[controllers.CheckData], result: Option[List[String]] = None)
 
 @main{
 
@@ -23,6 +23,11 @@
     </div>
     <div class="panel-body">
         <pre>
+            <ul>
+                @for(l <- result.get) {
+                <li>@l</li>
+                }
+            </ul>
             @result.get
         </pre>
     </div>
