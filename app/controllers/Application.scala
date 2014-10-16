@@ -28,14 +28,14 @@ object Application extends Controller {
       case CheckData(host,port,email) =>
         val session = new SMTPSession(host, port, email, "test@mail.ru", "Subject", "Body")
         val res = try {
-          session.sendMessage()
+          session.sendMessage() :: "----------------------------" :: Nil
         }
         catch {
-          case e => session.log + "\r\n --------------------------------------- \r\n        " + e.getMessage
+          case e => session.log :: e.getMessage :: "----------------------------" :: Nil
         }
-        val a = session.sendMessage()
+
         import scala.collection.JavaConversions._
-        a +: SMTPMXLookup.isAddressValid(email).toIndexedSeq.toList
+        res ++ SMTPMXLookup.isAddressValid(email).toIndexedSeq.toList
     })
 
     Ok(views.html.index(checkForm.bindFromRequest, data))
