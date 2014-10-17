@@ -12,12 +12,6 @@ object MxRecordsFinder {
 
   def lookup(domain: String) = {
     val dirContext = new InitialDirContext()
-    Logger.info(domain)
-    Logger.info(domain)
-    Logger.info(domain)
-    Logger.info(domain)
-    Logger.info(domain)
-
     val attributes = dirContext.getAttributes("dns:/" + domain, Array[String]("MX"))
     Option(attributes.get("MX")) match {
       case None => List(MxRecord(0,domain))

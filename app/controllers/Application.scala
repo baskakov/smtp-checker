@@ -10,7 +10,7 @@ import ws.bask.smtp.{SmtpCheckResult, EmailChecker}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class CheckData(host: String, port: Int, email: String)
+case class CheckData(email: String)
 
 object Application extends Controller {
 
@@ -21,15 +21,13 @@ object Application extends Controller {
 
   private val checkForm = Form(
     mapping(
-      "host" -> text,
-      "port" -> number,
       "email" -> text
     )(CheckData.apply)(CheckData.unapply)
   )
 
   def submit = Action.async { implicit request =>
     val data = checkForm.bindFromRequest.value.map({
-      case CheckData(host,port,email) =>
+      case CheckData(email) =>
         EmailChecker.check(email)
     })
 
