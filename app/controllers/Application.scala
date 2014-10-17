@@ -1,14 +1,12 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
-import play.api.data._
 import play.api.data.Forms._
-import com.arcww.smtp.{MailHostsLookup, SMTPMXLookup, SMTPSession}
-import ws.bask.smtp.{SmtpCheckResult, EmailChecker}
+import play.api.data._
+import play.api.mvc._
+import ws.bask.smtp.EmailChecker
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 case class CheckData(email: String)
 

@@ -15,13 +15,11 @@ object EmailChecker {
   }
 }
 
-
 case class Domain(name: String) {
   lazy val mailServers = Future{MxRecordsFinder.lookup(name)} map (mxs => DomainMailServers(name, mxs))
 
   def check(email: String) = mailServers.flatMap(_.check(email))
 }
-
 
 case class SmtpCheckResult(mxRecord: MxRecord, code: String, proof: List[String]) {
   def isBad = code.startsWith("2")
@@ -52,7 +50,7 @@ case class SmtpSocket(server: MxRecord) {
   var journal = List.empty[String]
   def sender="saprahan@mail.ru"
 
-  protected def connect {
+  private def connect {
     smtpSocket = new Socket(server.host, 25)
     smtpSocket.setSoTimeout(socketTimeout)
     in = new BufferedReader(new InputStreamReader(smtpSocket.getInputStream))
@@ -63,7 +61,7 @@ case class SmtpSocket(server: MxRecord) {
    * Sends given command and waits for a response from server.
    * @return response received from the server.
    */
-  protected def sendCommand(commandString: String): String = {
+  private def sendCommand(commandString: String): String = {
     journal :+= commandString
     out.write(commandString + "\n")
     out.flush
@@ -72,32 +70,16 @@ case class SmtpSocket(server: MxRecord) {
     return response
   }
 
-  /**
-   * Sends given commandString to the server, gets its reply and checks if
-   * it starts with expectedResponseStart. If not, throws IOException with
-   * server's reply (which is unexpected).
-   */
-  protected def doCommand(commandString: String, expectedResponseStart: Char) {
+  private def doCommand(commandString: String, expectedResponseStart: Char) {
     val response: String = sendCommand(commandString)
     checkServerResponse(response, expectedResponseStart)
   }
 
-  /**
-   * Checks if given server reply starts with expectedResponseStart.
-   * If not, throws IOException with this reply (because it is unexpected).
-   */
-  protected def checkServerResponse(response: String, expectedResponseStart: Char) {
+  private def checkServerResponse(response: String, expectedResponseStart: Char) {
     if (response.charAt(0) != expectedResponseStart) throw new IOException(response)
   }
 
-  /**
-   * Gets a response back from the server. Handles multi-line responses
-   * (according to SMTP protocol) and returns them as multi-line string.
-   * Each line of the server's reply consists of 3-digit number followed
-   * by some text. If there is a '-' immediately after the number, the SMTP
-   * response continues on the next line. Otherwise it finished at this line.
-   */
-  protected def getResponse: String = {
+  private def getResponse: String = {
     var response: String = ""
     var line: String = null
     do {
@@ -107,7 +89,7 @@ case class SmtpSocket(server: MxRecord) {
       }
       response += line + "\n"
     } while ((line.length > 3) && (line.charAt(3) == '-'))
-    return response
+    response
   }
 
   def check(email: String): Future[SmtpCheckResult] = Future {
@@ -115,33 +97,11 @@ case class SmtpSocket(server: MxRecord) {
     val response = getResponse
     journal :+= response
     checkServerResponse(response, '2')
-
-
-
     doCommand("HELO " + smtpSocket.getLocalAddress.toString, '2')
-
-
-
-    // Tell the server who this message is from
-
-
     doCommand("MAIL FROM: <" + sender + ">", '2')
-
-
-
-
-    // Now tell the server who we want to send a message to
-
-
     doCommand("RCPT TO: <" + email + ">", '2')
-
-
-
     sendCommand("RSET")
-
-
     sendCommand("QUIT")
-
     SmtpCheckResult(server, "OK", journal)
   }
 }
